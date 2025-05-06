@@ -1,33 +1,36 @@
 import { Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { UsersService } from 'src/services/users/users.service';
 
 @Controller('users')
 export class UsersController {
+  constructor(private userService: UsersService) {}
+
   @Get()
   getAllUsers(): string {
-    return 'all users';
+    return this.userService.getAllUsers();
   }
 
   @Get(':id')
-  getUserById(@Param() param): string {
-    return 'user id is ' + param.id;
+  getUserById(@Param('id') id): string {
+    return this.userService.getUserById(id);
   }
 
   @Post()
   sendUser(): string {
-    return 'user post data';
+    return this.userService.sendUser();
   }
   @Put()
   updateUsers(): string {
-    return 'user put data';
+    return this.userService.updateUsers();
   }
 
   @Delete()
   deleteUsers(): string {
-    return 'all user delete date';
+    return this.userService.deleteUsers();
   }
 
   @Delete(':id')
-  deleteUserById(@Param() param): string {
-    return 'user delete is ' + param.id;
+  deleteUserById(@Param('id') id): string {
+    return this.userService.deleteUserById(id);
   }
 }
