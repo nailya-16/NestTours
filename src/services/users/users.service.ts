@@ -25,11 +25,11 @@ export class UsersService {
     return this.userModel.findByIdAndUpdate(id);
   }
 
-  async deleteUsers(): Promise<User> {
-    return this.userModel.remove();
+  async deleteUsers(): Promise<any> {
+    return this.userModel.deleteMany();
   }
 
-  async deleteUserById(id: string): Promise<User> {
-    return this.userModel.findByIdAndRemove(id);
+  async deleteUserById(id: string): Promise<User | null> {
+    return this.userModel.findByIdAndDelete(id);
   }
 }
