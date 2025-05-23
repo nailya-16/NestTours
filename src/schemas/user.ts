@@ -10,7 +10,6 @@ export class User implements IUser {
     @Prop() cardNumber: string;
     @Prop() login: string;
     @Prop() email: string;
-    @Prop() id: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

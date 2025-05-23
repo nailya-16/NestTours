@@ -1,7 +1,8 @@
-import {Body, Controller, Delete, Get, Param, Post, Put} from '@nestjs/common';
+import {Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put, UseGuards} from '@nestjs/common';
 import {UsersService} from "../../services/users/users.service";
 import {User} from "../../schemas/user";
 import {UserDto} from "../../dto/user-dto";
+import { AuthGuard } from '@nestjs/passport';
 //import RejectedValue = jest.RejectedValue;
  
 @Controller('users')
@@ -21,28 +22,26 @@ export class UsersController {
     }
  
     @Post()
-    async sendUser(@Body() data: UserDto): Promise<User> {
- 
-      const queryRes = await this.userService.checkRegUser (data.login);
-      console.log('data reg', queryRes);
-      if (queryRes.length === 0) {
-          return this.userService.sendUser (data);
-      } else {
-          console.log('err - user already exists');
-          throw new Error('User  already exists');
-      }
- 
+    sendUser(@Body() data: UserDto): Promise<User> {
+      return this.userService.checkRegUser(data.login).then((queryRes: User[]) => {
+        console.log('data reg', queryRes);
+        if (queryRes.length === 0) {
+          return this.userService.sendUser(data);
+        } else {
+            console.log('err - user already exists');
+              throw new HttpException({
+                status: HttpStatus.CONFLICT,
+                errorText: 'Пользователь уже зарегистрирован',
+              }, HttpStatus.CONFLICT);
+          }
+      });
+       
     }
- 
+    
+    @UseGuards(AuthGuard('local'))
     @Post(":login")
-    async authUser(@Body() data: UserDto, @Param('login') login: string): Promise<User | boolean>  {
-      const queryRes = await this.userService.checkAuthUser (login, data.psw);
-      if (queryRes.length !== 0) {
-          return true;
-      } else {
-          console.log('err - authentication failed');
-          throw new Error('Authentication failed');
-      }
+    authUser(@Body() data: UserDto, @Param('login') login): any{
+      return this.userService.login(data);
  
     }
  
